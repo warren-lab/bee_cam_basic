@@ -1,0 +1,6 @@
+# compiled
+*.pyc
+
+# logs
+*.log
+*.txt
