@@ -187,6 +187,7 @@ while shutdown_dt >= datetime.now():
 
 disp.display_msg('Timed Shutdown', img_count)
 sleep(5)
+disp.clear_display()
 disp.disp_deinit() 
 with WittyPi() as witty: # set shutdown and startup
     witty.shutdown()
