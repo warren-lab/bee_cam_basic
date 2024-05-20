@@ -81,10 +81,14 @@ path_sensor_dat = curr_date
 # Initialize the sensors...
 ## also initializes the csv file name timestamp
 
-sensors = MultiSensor(path_sensor_dat)
+# sensors = MultiSensor(path_sensor_dat)
 # Initialize the display
 disp = Display()
 disp.display_msg('Initializing', img_count)
+
+# initialize wittypi shutdown
+with WittyPi() as witty:
+    shutdown_dt = witty.get_shutdown_datetime() 
 
 # Configure logging
 # log_file = "/home/pi/bee_cam/log.txt"
@@ -117,33 +121,32 @@ logging.info("Imaging...")
 time_current = datetime.now()
 
 cam_exception = threading.Event()
-dark_exception = threading.Event()
-time_exception = threading.Event()
-def sensor_data():
-    try:
-        # wait for event to be set
-        event.wait()
-        ## check the time and it will add the data if no exception raised
-        sensors.add_data(name,time_current)
-        # print(f"Sensor Data Acquired: {time_current_split}")
-        #print("Image acquired: ", time_current_split)
-    except DarkPeriod:
-        logging.info("Dark Period Exception Set Event")
-        dark_exception.set()
-    except ShutdownTime:
-        logging.info("Time for shutdown")
-        time_exception.set()
-    # # Save sensor data to csv immediately:
-    # sensors.append_to_csv()
+# dark_exception = threading.Event()
+# time_exception = threading.Event()
+# def sensor_data():
+#     try:
+#         # wait for event to be set
+#         event.wait()
+#         ## check the time and it will add the data if no exception raised
+#         sensors.add_data(name,time_current)
+#         # print(f"Sensor Data Acquired: {time_current_split}")
+#         #print("Image acquired: ", time_current_split)
+#     except DarkPeriod:
+#         logging.info("Dark Period Exception Set Event")
+#         dark_exception.set()
+#     except ShutdownTime:
+#         logging.info("Time for shutdown")
+#         time_exception.set()
+#     # # Save sensor data to csv immediately:
+#     # sensors.append_to_csv()
 def capture_image():
     try:
-        # wait for the event to be set...
-        event.wait()
         time_current_split = str(time_current.strftime("%Y%m%d_%H%M%S"))
         camera.capture_file('images/'+name + '_' + time_current_split + '.jpg')
         # print(("Image acquired: %s", time_current_split))
         logging.info("Image acquired: %s", time_current_split)
         #print("Image acquired: ", time_current_split)
+
     except Exception as e:
         logging.error("Error in capture_image: %s".e)
         cam_exception.set()
@@ -154,38 +157,39 @@ logging.info('Starting Experiment')
 time.sleep(3)
 # Start timer for the sensors
 curr_time = time.time()
-while True:
-
+while shutdown_dt >= datetime.now():
     try:
         disp.display_msg('Imaging!', img_count)
+        # dark_exception = threading.Event()
+        # time_exception = threading.Event()
         # Create the Event
         event =  threading.Event()
         # set the event
         event.set()
         # develop two threads, one for sensors and one for images
-        sensor_thread = threading.Thread(target = sensor_data)
+        # sensor_thread = threading.Thread(target = sensor_data)
         capture_thread = threading.Thread(target=capture_image)
         ## get the current time
         time_current = datetime.now()
         time_current_split = str(time_current.strftime("%Y%m%d_%H%M%S"))
         # print(time_current_split)
         # start the sensor thread and capture thread:
-        sensor_thread.start()
+        # sensor_thread.start()
         capture_thread.start()
 
         # Main thread waits for the threads to finish
         ## first waits for this longer thread to complete first (3 seconds)
-        capture_thread.join(timeout=5) 
+        capture_thread.join(timeout=3) 
         ## then will check if the sensor_thread is still alive and wait if needed 
-        sensor_thread.join() 
+        # sensor_thread.join() 
 
         # If darkperiod exception event is set
-        if dark_exception.is_set():
-            raise DarkPeriod
+        # if dark_exception.is_set():
+        #     raise DarkPeriod
         
         # if ShutdownTime is raised then it is time to shut the system down...
-        if time_exception.is_set():
-            raise ShutdownTime
+        # if time_exception.is_set():
+            # raise ShutdownTime
 
         # If thread is still alive after 3 seconds, it's probably hung
         if capture_thread.is_alive():
@@ -197,44 +201,46 @@ while True:
         # if wanting a delay in saving sensor data:
         if (time.time()-curr_time) >= 60:
             logging.info("CPU "+str(psutil.cpu_percent(interval=1))+"%")
-            disp.display_msg('Update CSV', img_count)
-            sensors.append_to_csv()
+            # disp.display_msg('Update CSV', img_count)
+            # sensors.append_to_csv()
             curr_time = time.time()
         sleep(1)
     except KeyboardInterrupt:
-        if len(list(sensors.data_dict.values())[0]) != 0:
-            disp.display_msg('Update CSV', img_count) 
-            # if list is not empty then add data...
-            sensors.append_to_csv()
-            time.sleep(3) 
+        # if len(list(sensors.data_dict.values())[0]) != 0:
+        #     disp.display_msg('Update CSV', img_count) 
+        #     # if list is not empty then add data...
+        #     sensors.append_to_csv()
+        #     time.sleep(3) 
         
         disp.display_msg('Interrupted', img_count)
-        sensors.sensors_deint()
+        disp.disp_deinit()
+        # sensors.sensors_deint()
         logging.info("KeyboardInterrupt")
         sys.exit()
-    except DarkPeriod:
-        if len(list(sensors.data_dict.values())[0]) != 0:
-            disp.display_msg('Update CSV', img_count) 
-            # if list is not empty then add data...
-            sensors.append_to_csv()
-            time.sleep(3)  
-        disp.display_msg('Dark Period Shutdown', img_count)
-        sensors.sensors_deint()
-        logging.info("DarkPeriod")
-        with WittyPi() as witty:
-            # print("Shutdown Time")
-            witty.shutdown()
-            witty.startup()
-        sys.exit()
+    # except DarkPeriod:
+    #     if len(list(sensors.data_dict.values())[0]) != 0:
+    #         disp.display_msg('Update CSV', img_count) 
+    #         # if list is not empty then add data...
+    #         sensors.append_to_csv()
+    #         time.sleep(3)  
+    #     disp.display_msg('Dark Period Shutdown', img_count)
+    #     sensors.sensors_deint()
+    #     logging.info("DarkPeriod")
+    #     with WittyPi() as witty:
+    #         # print("Shutdown Time")
+    #         witty.shutdown()
+    #         witty.startup()
+    #     sys.exit()
 
     except ShutdownTime:
-        if len(list(sensors.data_dict.values())[0]) != 0:
-            disp.display_msg('Update CSV', img_count) 
-            # if list is not empty then add data...
-            sensors.append_to_csv()
-            time.sleep(3) 
-        sensors.sensors_deint()
+        # if len(list(sensors.data_dict.values())[0]) != 0:
+        #     disp.display_msg('Update CSV', img_count) 
+        #     # if list is not empty then add data...
+        #     sensors.append_to_csv()
+        #     time.sleep(3) 
+        # sensors.sensors_deint()
         disp.display_msg('Timed Shutdown', img_count)
+        disp.disp_deinit() 
         with WittyPi() as witty:
             # print("Shutdown Time")
             witty.shutdown()
@@ -248,6 +254,7 @@ while True:
         if retry_count >= MAX_RETRIES:
             disp.display_msg('Max retries reached!', img_count)
             logging.error("Max retries reached. Exiting...")
+            disp.disp_deinit() 
             with WittyPi() as witty:
                 # print("Shutdown Time")
                 witty.shutdown()
@@ -260,6 +267,6 @@ while True:
     except:
         disp.display_msg('Error', img_count)
         logging.exception("Error capturing image")
-        sensors.sensors_deint()
+        disp.disp_deinit() 
         sys.exit()
 

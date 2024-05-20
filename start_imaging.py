@@ -17,7 +17,7 @@ lens_position = config['lens_position']
 
 
 # Configure logging
-log_file = "/home/pi/imaging/log.txt"
+log_file = "/home/pi/data/log.txt"
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 try:
