@@ -137,7 +137,7 @@ class WittyPi():
         The actual shutdown executed by the shutdown script will happen at 9:35pm to give a bit more buffer
         """
         curr_time = self.get_current_time()
-        # Set the shutdown time for today (will be 8pm normally but 9:30pm if testing!)
+        # Set the shutdown time for today (will be 8pm normally!)
         self._shutdown_datetime= curr_time.replace(hour = 20,minute = 0, second = 0)# amount of time until shutdown (at least 3 minutes)
         print(self._shutdown_datetime)
         print(self._shutdown_datetime >= datetime.now())
@@ -243,7 +243,9 @@ class WittyPi():
         """
         This method sets the startup time registers on the WittyPi 4 mini 
         
-        In this case it sets the start up time to be 7am or 9:45pm 
+        In this case it sets the start up time to be 7am 
+
+
         """
         # SET STARTUP!
         ## get the current time
@@ -501,88 +503,177 @@ class RTC(Sensor):
     """
 
 
-class Monitor(Sensor):
-    """
-    Sensor subclass specfic to a 128x64 Oled Display
+# class Monitor(Sensor):
+#     """
+#     Sensor subclass specfic to a 128x64 Oled Display
 
-    Sensor Source -> https://www.amazon.com/Hosyond-Display-Self-Luminous-Compatible-Raspberry/dp/B09C5K91H7/ref=cm_cr_arp_d_product_top?ie=UTF8&th=1
+#     Sensor Source -> https://www.amazon.com/Hosyond-Display-Self-Luminous-Compatible-Raspberry/dp/B09C5K91H7/ref=cm_cr_arp_d_product_top?ie=UTF8&th=1
 
-    Methods:
-    - show_system_stat()
-        Displays the current system status
-    - 
+#     Methods:
+#     - show_system_stat()
+#         Displays the current system status
+#     - 
 
 
 
-    Display showcasing Pi information and status
+#     Display showcasing Pi information and status
     
-    SOURCE -> https://github.com/adafruit/Adafruit_CircuitPython_SSD1306/tree/main
-    """
-    def __init__(self, width, height): ## when calling function input the width and height
-        super().__init__(adafruit_ssd1306.SSD1306_I2C(width,height, self.i2c))
-        ## dimensions
-        self._width = width
-        self._height = height
-        ## font
-        self._font = ImageFont.load_default()
-        ##
-        self._enabled = True
-        # get ip address
-        self._ip = self.get_ip_address()
+#     SOURCE -> https://github.com/adafruit/Adafruit_CircuitPython_SSD1306/tree/main
+#     """
+#     def __init__(self, width, height): ## when calling function input the width and height
+#         super().__init__(adafruit_ssd1306.SSD1306_I2C(width,height, self.i2c))
+#         ## dimensions
+#         self._width = width
+#         self._height = height
+#         ## font
+#         self._font = ImageFont.load_default()
+#         ##
+#         self._enabled = True
+#         # get ip address
+#         self._ip = self.get_ip_address()
         
-        ## initialize board to clear
-        self.sensor_device.fill(0)
-        self.sensor_device.show()
+#         ## initialize board to clear
+#         self.sensor_device.fill(0)
+#         self.sensor_device.show()
+
+#     def display_time(self):
+#         if not self._enabled:
+#             return
+
+#         image = Image.new('1', (self._width, self._height))
+#         draw = ImageDraw.Draw(image)
+        
+#         # Clear the image buffer
+#         draw.rectangle((0, 0, self._width, self._height), outline=0, fill=0)
+
+#         # Get the current time
+#         current_time = time.strftime('%H:%M:%S')
+        
+#         # Draw the time on the image
+#         draw.text((0, 1), current_time, font=self._font, fill=255)
+
+#         # Display the image
+#         self.image(image)
+#         self.show()
+
+#     def display_msg(self, status, img_count=1):
+#         if not self._enabled:
+#             return
+
+#         msg = [f'{status}', 
+#                 time.strftime('%H:%M:%S'),
+#                 f'Img count: {img_count}',
+#                 f'IP: {self._ip}']
+
+        
+#         image = Image.new('1', (self._width, self._height))
+#         draw = ImageDraw.Draw(image)
+        
+#         # Clear the image buffer
+#         draw.rectangle((0, 0, self._width, self._height), outline=0, fill=0)
+#         #_, font_height = self.font.getsize('Sample Text')
+#         x, y = 0, 0
+#         for item in msg:
+#             draw.text((x, y), item, font=self._font, fill=255)
+#             y += 14
+        
+#         self.sensor_device.image(image)
+#         self.sensor_device.show()
+#     def clear_display(self):
+#         if not self._enabled:
+#             return
+#         image = Image.new('1', (self._width, self._height))
+#         self.sensor_device.image(image)
+#         self.sensor_device.show()
+
+
+#     def get_ip_address(self):
+#         try:
+#             hostname = socket.gethostname()
+#             result = os.popen(f"ifconfig eth0").read()
+#             IPAddr = result.split("inet ")[1].split()[0]
+#             return f'{hostname}@{IPAddr}'
+#         except:
+#             return "Unknown"
+class Display:
+    """
+    Display showcasing Pi information and status
+    """
+    def __init__(self):
+        self.width = 128
+        self.height = 64
+        self.font = ImageFont.load_default()
+        self.enabled = True  # Initialize as True, will be set to False on error
+        self.ip = self.get_ip_address()
+        self._i2c = board.I2C()
+        try:
+            self._disp = adafruit_ssd1306.SSD1306_I2C(self.width,self.height, self._i2c)
+            self._disp.width = self.width
+            self._disp.height = self.height
+            # self.disp.begin()
+            self._disp.fill(0)
+            # self.disp.clear()
+            self._disp.show()
+        except RuntimeError as e:
+            print(f'Display: {e}', file=sys.stderr)
+            self.enabled = False
+        # self._batt = Battery()
 
     def display_time(self):
-        if not self._enabled:
+        if not self.enabled:
             return
 
-        image = Image.new('1', (self._width, self._height))
+        image = Image.new('1', (self.width, self.height))
         draw = ImageDraw.Draw(image)
         
         # Clear the image buffer
-        draw.rectangle((0, 0, self._width, self._height), outline=0, fill=0)
+        draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
 
         # Get the current time
         current_time = time.strftime('%H:%M:%S')
         
         # Draw the time on the image
-        draw.text((0, 1), current_time, font=self._font, fill=255)
+        draw.text((0, 1), current_time, font=self.font, fill=255)
 
         # Display the image
-        self.image(image)
-        self.show()
+        self._disp.image(image)
+        self._disp.show()
 
     def display_msg(self, status, img_count=1):
-        if not self._enabled:
+        if not self.enabled:
             return
 
+        # msg = [f'{status}', 
+        #         time.strftime('%H:%M:%S'),
+        #         f'Img count: {img_count}',
+        #         f'IP: {self.ip}']
         msg = [f'{status}', 
                 time.strftime('%H:%M:%S'),
-                f'Img count: {img_count}',
-                f'IP: {self._ip}']
-
+                f'Img count: {img_count}',]
         
-        image = Image.new('1', (self._width, self._height))
+        # logging.info(f"Battery Charge (SOC & Voltage): {self._batt.SoC()}% {self._batt.volt_diff()}%")
+        image = Image.new('1', (self.width, self.height))
         draw = ImageDraw.Draw(image)
         
         # Clear the image buffer
-        draw.rectangle((0, 0, self._width, self._height), outline=0, fill=0)
+        draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
         #_, font_height = self.font.getsize('Sample Text')
         x, y = 0, 0
         for item in msg:
-            draw.text((x, y), item, font=self._font, fill=255)
+            draw.text((x, y), item, font=self.font, fill=255)
             y += 14
         
-        self.sensor_device.image(image)
-        self.sensor_device.show()
+        self._disp.image(image)
+        self._disp.show()
+    # def get_batt_charge(self):
+    #     return self._batt.SoC(), self._batt.volt_diff()  
+
     def clear_display(self):
-        if not self._enabled:
+        if not self.enabled:
             return
-        image = Image.new('1', (self._width, self._height))
-        self.sensor_device.image(image)
-        self.sensor_device.show()
+        image = Image.new('1', (self.width, self.height))
+        self._disp.image(image)
+        self._disp.show()
 
 
     def get_ip_address(self):
@@ -593,7 +684,12 @@ class Monitor(Sensor):
             return f'{hostname}@{IPAddr}'
         except:
             return "Unknown"
-
+    def disp_deinit(self):
+        """
+        Deinitialize the battery monitor and the display
+        """
+        # self._batt.sensor_deinit()
+        self._i2c.deinit()
 
 # if __name__ == '__main__':
 #     disp = Display()
