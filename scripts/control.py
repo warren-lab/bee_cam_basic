@@ -124,7 +124,7 @@ curr_time = time.time()
 while True:
 
     try:
-        disp.display_msg('Imaging!', img_count)
+        # disp.display_msg('Imaging!', img_count)
 
         # Create the Event
         event =  threading.Event()

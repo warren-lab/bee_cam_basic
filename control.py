@@ -91,7 +91,7 @@ try:
     cam_config = camera.create_still_configuration({'size': size})
     camera.configure(cam_config)
     camera.exposure_mode = 'sports'
-    camera.set_controls({"LensPosition": lens_position,"FrameRate": 1})
+    camera.set_controls({"LensPosition": lens_position})
     camera.start()
     sleep(5)
 except:
@@ -145,7 +145,7 @@ while shutdown_dt >= datetime.now():
 
         # Main thread waits for the threads to finish
         ## first waits for this longer thread to complete first (3 seconds)
-        capture_thread.join(timeout=3) 
+        capture_thread.join(timeout=2) 
 
         # If thread is still alive after 3 seconds, it's probably hung
         if capture_thread.is_alive():
@@ -170,9 +170,9 @@ while shutdown_dt >= datetime.now():
             logging.error("Max retries reached. Exiting...")
             disp.clear_display()
             disp.disp_deinit() 
-            with WittyPi() as witty: # set shutdown and startup
-                witty.shutdown()
-                witty.startup()
+            # with WittyPi() as witty: # set shutdown and startup
+            #     witty.shutdown()
+            #     witty.startup()
             sys.exit()
         else:
             # Wait for a bit before attempting a retry
