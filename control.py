@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
+import signal
 import logging
 from scripts.config import Config
 from scripts.sensors import MultiSensor
@@ -41,6 +42,9 @@ TO DO:
 
 
 """
+
+
+
 def shutdown_to_sleep():
     """ This method signals a shutdown time to the
     WittyPi that is 5 minutes from current time. 
@@ -124,6 +128,19 @@ retry_count = 0
 disp.display_msg('Starting Experiment', img_count)
 logging.info('Starting Experiment')
 sleep(3)
+
+# SET PID
+def sig_handler(signum, frame):
+    """Signal Handler for If SIGTERM signal"""
+    disp.display_msg('Script Killed!', img_count)
+    disp.clear_display()
+    disp.disp_deinit()
+    logging.info("Control Script Killed!")
+    sys.exit(0)
+
+# pid = os.getpid()
+# signal.signal(signal.SIGTERM,sig_handler)
+
 # Start timer for the sensors
 curr_time = time.time()
 while shutdown_dt >= datetime.now():

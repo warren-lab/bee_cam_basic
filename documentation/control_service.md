@@ -15,7 +15,7 @@ After this then tested that it worked properly
 Then created the service...
 - first created the servce file
 ```
-sudo nano /etc/systemd/system/bee_cam.service
+sudo nano /etc/systemd/system/bee_cam_basic.service
 ```
 - after this point we then can work with the general structure seen in this [tutorial](https://www.thedigitalpictureframe.com/ultimate-guide-systemd-autostart-scripts-raspberry-pi/
 ```
@@ -25,10 +25,10 @@ After=network.target datetime_sync.service # after the RTC.service has been comp
 
 [Service]
 Type=oneshot
-WorkingDirectory=/home/pi/bee_cam/
+WorkingDirectory=/home/pi/bee_cam_basic/
 User=pi
 ExecStart=/bin/sleep 10
-ExecStart=/usr/bin/python3 /home/pi/bee_cam/control.py
+ExecStart=/usr/bin/python3 /home/pi/bee_cam_basic/control.py
 RemainAfterExit=true
 
 [Install]
