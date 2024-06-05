@@ -101,6 +101,9 @@ try:
 except:
     disp.display_msg('Cam not connected', img_count)
     logging.error("Camera init failed")
+    sleep(5)
+    disp.clear_display()
+    disp.disp_deinit()
     sys.exit()
 
 # go to working dir
@@ -123,7 +126,7 @@ def capture_image():
     except Exception as e:
         logging.error("Error in capture_image: %s".e)
         cam_exception.set()
-MAX_RETRIES = 3
+MAX_RETRIES = 6
 retry_count = 0
 disp.display_msg('Starting Experiment', img_count)
 logging.info('Starting Experiment')
@@ -133,13 +136,14 @@ sleep(3)
 def sig_handler(signum, frame):
     """Signal Handler for If SIGTERM signal"""
     disp.display_msg('Script Killed!', img_count)
+    sleep(5)
     disp.clear_display()
     disp.disp_deinit()
     logging.info("Control Script Killed!")
     sys.exit(0)
 
 # pid = os.getpid()
-# signal.signal(signal.SIGTERM,sig_handler)
+signal.signal(signal.SIGTERM,sig_handler)
 
 # Start timer for the sensors
 curr_time = time.time()

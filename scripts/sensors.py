@@ -245,7 +245,7 @@ class WittyPi():
         
         In this case it sets the start up time to be 7am 
 
-
+        When testing make sure to commente dout start_time + timedelta(days=1)
         """
         # SET STARTUP!
         ## get the current time
