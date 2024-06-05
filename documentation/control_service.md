@@ -20,15 +20,18 @@ sudo nano /etc/systemd/system/bee_cam_basic.service
 - after this point we then can work with the general structure seen in this [tutorial](https://www.thedigitalpictureframe.com/ultimate-guide-systemd-autostart-scripts-raspberry-pi/
 ```
 [Unit]
-Description=Service file that will start the bee_cam script up
-After=network.target datetime_sync.service # after the RTC.service has been completed
+Description=Service file that will start the bee_cam_basic control script up
+After=network.target datetime_sync.service ssh.service
 
 [Service]
 Type=oneshot
 WorkingDirectory=/home/pi/bee_cam_basic/
 User=pi
-ExecStart=/bin/sleep 10
+ExecStartPre=/bin/sleep 90
 ExecStart=/usr/bin/python3 /home/pi/bee_cam_basic/control.py
+KillSignal=SIGTERM
+TimeoutStopSec=30
+KillMode=control-group
 RemainAfterExit=true
 
 [Install]
