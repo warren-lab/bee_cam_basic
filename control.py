@@ -147,7 +147,7 @@ signal.signal(signal.SIGTERM,sig_handler)
 
 # Start timer for the sensors
 curr_time = time.time()
-while shutdown_dt >= datetime.now():
+while True:
     try:
         disp.display_msg('Imaging!', img_count)
         # Create the Event
@@ -171,15 +171,19 @@ while shutdown_dt >= datetime.now():
         # If thread is still alive after 3 seconds, it's probably hung
         if capture_thread.is_alive():
             raise TimeoutError("Camera operation took too long!")
-    
+        
+        if shutdown_dt <= datetime.now():
+            raise ShutdownTime
+        
         img_count += 1
         retry_count = 0
        
     except KeyboardInterrupt:
         disp.display_msg('Interrupted', img_count)
+        time.sleep(5)
+        logging.info("KeyboardInterrupt")
         disp.clear_display()
         disp.disp_deinit()
-        logging.info("KeyboardInterrupt")
         sys.exit()
 
     except TimeoutError:
@@ -189,6 +193,7 @@ while shutdown_dt >= datetime.now():
         if retry_count >= MAX_RETRIES:
             disp.display_msg('Max retries reached!', img_count)
             logging.error("Max retries reached. Exiting...")
+            sleep(5)
             disp.clear_display()
             disp.disp_deinit() 
             # with WittyPi() as witty: # set shutdown and startup
@@ -199,19 +204,23 @@ while shutdown_dt >= datetime.now():
             # Wait for a bit before attempting a retry
             sleep(2)
             continue
+    except ShutdownTime:
+        disp.display_msg('Timed Shutdown', img_count)
+        sleep(10)
+        with WittyPi() as witty: # set shutdown and startup
+            witty.shutdown()
+            witty.startup()
+        sleep(5)
+        disp.clear_display()
+        disp.disp_deinit() 
+        sys.exit()
     except:
         disp.display_msg('Error', img_count)
         logging.exception("Error capturing image")
+        time.sleep(5)
         disp.clear_display()
         disp.disp_deinit() 
         sys.exit()
 
-disp.display_msg('Timed Shutdown', img_count)
-sleep(5)
-disp.clear_display()
-disp.disp_deinit() 
-with WittyPi() as witty: # set shutdown and startup
-    witty.shutdown()
-    witty.startup()
-sys.exit()
+
 
