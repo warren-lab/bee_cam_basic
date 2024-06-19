@@ -217,7 +217,7 @@ while True:
     except:
         disp.display_msg('Error', img_count)
         logging.exception("Error capturing image")
-        time.sleep(5)
+        sleep(5)
         disp.clear_display()
         disp.disp_deinit() 
         sys.exit()
