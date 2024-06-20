@@ -86,3 +86,50 @@ Currently, this process is manual but we will be implementing a fleed managment 
         - interrupt the current process
 
 ## Test 3
+* Systemd Service Test
+    - SSH into Pi, and execute the following commands:
+        1. Reload the systemctl daemon which allows for any changes made to the bee_cam_basic module to be applied
+        ```
+        sudo systemctl daemon-reload
+        ``` 
+        2. Try starting the service.
+        ```
+        sudo systemctl start bee_cam_basic.service
+        ```
+        3. After starting the service wait until the display shows camera has initialized and has imaged 10+ images. Then stop the service.
+        ```
+        sudo systemctl stop bee_cam_basic.service
+        ```
+    - Ensure that after stopping the `bee_cam_basic service` that the display cleared or stopped (sometimes the display will not clear as there was an issue with using a SIGTERM Kill command to stop the process). Regardless a cleared display or if display has ceased updating is indicative that the stop worked
+
+    - at this point proceed to enable the service
+* Systemd Service Boot Test
+    - Enable the service:
+        ```
+        sudo systemctl enable bee_cam_basic.service
+        ```
+    - Shutdown the Pi
+        ```
+        sudo shutdown -h now
+        ```
+    - Wait until white status light on Witty Pi is flashing and then manually boot the pi up again. 
+    - After pressing the button to boot up the Pi it will take approximately 3 minutes until the display will start up. 
+    - Monitor the display after it has populated the time, and ensure that no errors are occurring and that the current time is correct.
+
+## Test 4:
+* SSH During Experiment:
+    - During experiments you may want to see how the Pi is doing or check up on storage. To ensure this functionality will work during an actual experiment attempt to ssh into the Pi.
+
+* Check Log.txt:
+    - Go to the most recent experiment or a past one and examine the log.txt file.
+    - use bash commands to look at the first 5 lines and last five lines.
+    First five:
+    ```
+    cat log.txt | head -n5
+    ```
+
+    Last five:
+    ```
+    cat log.txt | tail -n5
+    ```
+

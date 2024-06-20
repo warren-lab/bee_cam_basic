@@ -648,7 +648,7 @@ class Display:
         #         f'Img count: {img_count}',
         #         f'IP: {self.ip}']
         msg = [f'{status}', 
-                time.strftime('%H:%M:%S'),
+                time.strftime('%Y-%m-%d %H:%M:%S'),
                 f'Img count: {img_count}',]
         
         # logging.info(f"Battery Charge (SOC & Voltage): {self._batt.SoC()}% {self._batt.volt_diff()}%")
