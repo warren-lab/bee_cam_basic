@@ -63,6 +63,7 @@ name = config['general']['name']
 size = (config['imaging'].getint('w'), config['imaging'].getint('h'))
 lens_position = config['imaging'].getfloat('lens_position')
 img_count = 0
+test_yn = config['general']['test']
 
 # set main and sub output dirs
 main_dir = "/home/pi/data/"
@@ -74,7 +75,7 @@ path_image_dat = os.path.join(curr_date,'images')
 
 os.makedirs(path_image_dat, exist_ok=True)
 
-# Initialize the display
+# Initialize display
 disp = Display()
 disp.display_msg('Initializing', img_count)
 
@@ -108,8 +109,28 @@ except:
 
 # go to working dir
 os.chdir(curr_date)
+
+if test_yn == 'y':
+    img_count = 21
+    disp.display_msg('TEST MODE', img_count)
+    if not os.path.exists('test_imgs'):
+        os.mkdir('test_imgs')
+    os.chdir('test_imgs')
+    import numpy as np
+    lp_list = np.arange(0, 5.25, 0.25)
+    for lp in lp_list:
+        camera.set_controls({"LensPosition": lp})
+        camera.capture_file(f'lp_{lp}.jpg')
+        sleep(0.3)
+        img_count -= 1
+        disp.display_msg('TEST MODE', img_count)
+    disp.display_msg('Test complete', img_count)
+
+os.chdir(curr_date)
+
 print('Imaging')
 logging.info("Imaging...")
+img_count = 0
 
 time_current = datetime.now()
 

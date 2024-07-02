@@ -4,7 +4,7 @@ class Config(configparser.ConfigParser):
 
     def __init__(self):
         super().__init__()
-        self.read('/home/pi/bee_cam/config.ini')
+        self.read('/home/pi/bee_cam_basic/config.ini')
 
     def print(self):
         for section in self.sections():
