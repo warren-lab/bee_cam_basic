@@ -155,7 +155,7 @@ while True:
         retry_count = 0
        
         # if wanting a delay in saving sensor data:
-        if (time.time()-curr_time) >= 30:
+        if (time.time()-curr_time) >= 60:
             print(psutil.cpu_percent(interval=1),"%")
             sensors.append_to_csv()
             curr_time = time.time()
