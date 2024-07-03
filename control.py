@@ -61,7 +61,7 @@ config = Config()
 
 name = config['general']['name']    
 size = (config['imaging'].getint('w'), config['imaging'].getint('h'))
-lens_position = config['imaging'].getfloat('lens_position')
+lens_position_cfg = config['imaging'].getfloat('lens_position')
 img_count = 0
 test_yn = config['general']['test']
 
@@ -96,7 +96,7 @@ try:
     cam_config = camera.create_still_configuration({'size': size})
     camera.configure(cam_config)
     camera.exposure_mode = 'sports'
-    camera.set_controls({"LensPosition": lens_position})
+    camera.set_controls({"LensPosition": lens_position_cfg})
     camera.start()
     sleep(5)
 except:
@@ -125,8 +125,8 @@ if test_yn == 'y':
         img_count -= 1
         disp.display_msg('TEST MODE', img_count)
     disp.display_msg('Test complete', img_count)
-
-os.chdir(curr_date)
+    os.chdir(curr_date)
+    camera.set_controls({"LensPosition": lens_position_cfg})
 
 print('Imaging')
 logging.info("Imaging...")
