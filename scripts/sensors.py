@@ -717,6 +717,38 @@ class Display:
         
         self._disp.image(image)
         self._disp.show()
+    def display_msg_temp(self, status, img_count=1,temp_dat=None):
+        """
+        Display message method for displaying a message that will contain the information 
+        related to the Pi internal temp 
+        """
+        if not self.enabled:
+            return
+
+        # msg = [f'{status}', 
+        #         time.strftime('%H:%M:%S'),
+        #         f'Img count: {img_count}',
+        #         f'IP: {self.ip}']
+        msg = [f'{status}', 
+                time.strftime('%Y-%m-%d %H:%M:%S'),
+                f'Img count: {img_count}',
+                f'Temperature C', temp_dat,
+		f'IP: {self.ip}']
+        
+        # logging.info(f"Battery Charge (SOC & Voltage): {self._batt.SoC()}% {self._batt.volt_diff()}%")
+        image = Image.new('1', (self.width, self.height))
+        draw = ImageDraw.Draw(image)
+        
+        # Clear the image buffer
+        draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
+        #_, font_height = self.font.getsize('Sample Text')
+        x, y = 0, 0
+        for item in msg:
+            draw.text((x, y), item, font=self.font, fill=255)
+            y += 14
+        
+        self._disp.image(image)
+        self._disp.show()
     # def get_batt_charge(self):
     #     return self._batt.SoC(), self._batt.volt_diff()  
 

@@ -102,7 +102,7 @@ with WittyPi() as witty:
         camera.start()
         sleep(5)
     except:
-        disp.display_msg('Cam not connected', img_count)
+        disp.display_msg_temp('Cam not connected', img_count,witty.get_internal_temperature())
         logging.error("Camera init failed")
         sleep(5)
         disp.clear_display()
@@ -113,7 +113,7 @@ with WittyPi() as witty:
     os.chdir(curr_date)
 
     if test_yn == 'y':
-        disp.display_msg('TEST MODE', img_count)
+        disp.display_msg_temp('TEST MODE', img_count,witty.get_internal_temperature())
         if not os.path.exists('test_imgs'):
             os.mkdir('test_imgs')
         os.chdir('test_imgs')
@@ -124,8 +124,8 @@ with WittyPi() as witty:
             camera.capture_file(f'lp_{lp}.jpg')
             sleep(0.3)
             img_count -= 1
-            disp.display_msg('TEST MODE', img_count)
-        disp.display_msg('Test complete', img_count)
+            disp.display_msg_temp('TEST MODE', img_count,witty.get_internal_temperature())
+        disp.display_msg_temp('Test complete', img_count,witty.get_internal_temperature())
         os.chdir(curr_date)
         camera.set_controls({"LensPosition": lens_position_cfg})
 
@@ -150,7 +150,7 @@ with WittyPi() as witty:
             cam_exception.set()
     MAX_RETRIES = 6
     retry_count = 0
-    disp.display_msg('Starting Experiment', img_count)
+    disp.display_msg_temp('Starting Experiment', img_count,witty.get_internal_temperature())
     logging.info('Starting Experiment')
     sleep(3)
 
@@ -171,7 +171,7 @@ with WittyPi() as witty:
     curr_time = time.time()
     while True:
         try:
-            disp.display_msg('Imaging!', img_count)
+            disp.display_msg_temp('Imaging!', img_count,witty.get_internal_temperature())
             # Create the Event
             event =  threading.Event()
             # set the event
@@ -204,7 +204,7 @@ with WittyPi() as witty:
             retry_count = 0
         
         except KeyboardInterrupt:
-            disp.display_msg('Interrupted', img_count)
+            disp.display_msg_temp('Interrupted', img_count,witty.get_internal_temperature())
             time.sleep(5)
             logging.info("KeyboardInterrupt")
             if len(list(witty.data_dict.values())[0]) != 0: 
@@ -216,10 +216,10 @@ with WittyPi() as witty:
 
         except TimeoutError:
             retry_count += 1
-            disp.display_msg('Cam Timeout!', img_count)
+            disp.display_msg_temp('Cam Timeout!', img_count,witty.get_internal_temperature())
             logging.error("Camera operation timeout!")
             if retry_count >= MAX_RETRIES:
-                disp.display_msg('Max retries reached!', img_count)
+                disp.display_msg_temp('Max retries reached!', img_count,witty.get_internal_temperature())
                 logging.error("Max retries reached. Exiting...")
                 sleep(5)
                 disp.clear_display()
@@ -233,7 +233,7 @@ with WittyPi() as witty:
                 sleep(2)
                 continue
         except ShutdownTime:
-            disp.display_msg('Timed Shutdown', img_count)
+            disp.display_msg_temp('Timed Shutdown', img_count,witty.get_internal_temperature())
             sleep(10)
             if len(list(witty.data_dict.values())[0]) != 0: 
                 witty.append_temp_csv()
@@ -246,7 +246,7 @@ with WittyPi() as witty:
             disp.disp_deinit() 
             sys.exit()
         except:
-            disp.display_msg('Error', img_count)
+            disp.display_msg_temp('Error', img_count,witty.get_internal_temperature())
             logging.exception("Error capturing image")
             sleep(5)
             disp.clear_display()
