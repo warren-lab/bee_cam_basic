@@ -84,7 +84,7 @@ class WittyPi():
         self.data_dict = {}
         main_dir = "/home/pi/data/"
         start_time= datetime.now().strftime('%Y%m%d_%H%M%S')
-        date_folder = str(start_time)
+        date_folder = str(datetime.now().strftime("%Y-%m-%d"))
         path_sensors = os.path.join(main_dir, date_folder)
         self._filename = f'{path_sensors}/temp_data_{start_time}.csv'# all data is written to this CSV...
     def __enter__(self):
@@ -732,8 +732,7 @@ class Display:
         msg = [f'{status}', 
                 time.strftime('%Y-%m-%d %H:%M:%S'),
                 f'Img count: {img_count}',
-                f'Temperature C: {temp_dat}',
-		f'IP: {self.ip}']
+                f'Temperature C: {temp_dat}']
         
         # logging.info(f"Battery Charge (SOC & Voltage): {self._batt.SoC()}% {self._batt.volt_diff()}%")
         image = Image.new('1', (self.width, self.height))
