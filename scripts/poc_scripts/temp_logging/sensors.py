@@ -329,9 +329,13 @@ class WittyPi():
         temp = self._bus.read_byte_data(8,50)
         temp_f = temp*(9/5) + 32
         if 'temp' not in self.data_dict.keys():
+            time_current_split = str(datetime.now().strftime("%Y%m%d_%H%M%S"))
+            self.data_dict['time'] = time_current_split
             self.data_dict['temp'] = [temp]
         ## if key doesn't exist then create
         else:
+            time_current_split = str(datetime.now().strftime("%Y%m%d_%H%M%S"))
+            self.data_dict['time'].append(time_current_split)
             self.data_dict['temp'].append(temp)
         print(f"Temperature {round(temp,3)} C, {round(temp_f,3)} F")
         return temp
