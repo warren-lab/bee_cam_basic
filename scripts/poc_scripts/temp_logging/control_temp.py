@@ -3,12 +3,12 @@ import os
 import sys
 import signal
 import logging
-from scripts.config import Config
-from scripts.sensors import MultiSensor
-from scripts.sensors import Display
-from scripts.sensors import WittyPi
-from scripts.sensors import DarkPeriod
-from scripts.sensors import ShutdownTime
+from config import Config
+from sensors import MultiSensor
+from sensors import Display
+from sensors import WittyPi
+from sensors import DarkPeriod
+from sensors import ShutdownTime
 from picamera2 import Picamera2
 from time import sleep
 from datetime import datetime
