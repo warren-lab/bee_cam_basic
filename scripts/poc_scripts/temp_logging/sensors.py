@@ -330,7 +330,7 @@ class WittyPi():
         temp_f = temp*(9/5) + 32
         if 'temp' not in self.data_dict.keys():
             time_current_split = str(datetime.now().strftime("%Y%m%d_%H%M%S"))
-            self.data_dict['time'] = time_current_split
+            self.data_dict['time'] = [time_current_split]
             self.data_dict['temp'] = [temp]
         ## if key doesn't exist then create
         else:
