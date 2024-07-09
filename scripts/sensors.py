@@ -732,7 +732,7 @@ class Display:
         msg = [f'{status}', 
                 time.strftime('%Y-%m-%d %H:%M:%S'),
                 f'Img count: {img_count}',
-                f'Temperature C', temp_dat,
+                f'Temperature C', str(temp_dat),
 		f'IP: {self.ip}']
         
         # logging.info(f"Battery Charge (SOC & Voltage): {self._batt.SoC()}% {self._batt.volt_diff()}%")
