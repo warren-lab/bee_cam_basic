@@ -157,7 +157,9 @@ with WittyPi() as witty:
     # SET PID
     def sig_handler(signum, frame):
         """Signal Handler for If SIGTERM signal"""
-        disp.display_msg('Script Killed!', img_count)
+        if len(list(witty.data_dict.values())[0]) != 0: 
+            witty.append_temp_csv()
+        disp.display_msg_temp('Script Killed!', img_count,img_count,witty.get_internal_temperature())
         sleep(5)
         disp.clear_display()
         disp.disp_deinit()
