@@ -82,11 +82,11 @@ class WittyPi():
 
         # Data:
         self.data_dict = {}
-        main_dir = "/home/pi/data/temp_dat/"
+        main_dir = "/home/pi/data/"
         start_time= datetime.now().strftime('%Y%m%d_%H%M%S')
         date_folder = str(start_time)
         path_sensors = os.path.join(main_dir, date_folder)
-        self._filename = f'{path_sensors}/sensor_data_{start_time}.csv'# all data is written to this CSV...
+        self._filename = f'{path_sensors}/temp_data_{start_time}.csv'# all data is written to this CSV...
     def __enter__(self):
         """return the SMBus object"""
         self._bus = SMBus(self._bus_num)
