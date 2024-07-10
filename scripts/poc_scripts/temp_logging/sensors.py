@@ -80,13 +80,13 @@ class WittyPi():
         self._startup_datetime = ""
         self._time_to_startup = timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)
 
-        # # Data:
-        # self.data_dict = {}
-        # main_dir = "/home/pi/data/"
-        # start_time= datetime.now().strftime('%Y%m%d_%H%M%S')
-        # date_folder = str(datetime.now().strftime("%Y-%m-%d"))
-        # path_sensors = os.path.join(main_dir, date_folder)
-        # self._filename = f'{path_sensors}/temp_data_{start_time}.csv'# all data is written to this CSV...
+        # Data:
+        self.data_dict = {}
+        main_dir = "/home/pi/data/"
+        start_time= datetime.now().strftime('%Y%m%d_%H%M%S')
+        date_folder = str(datetime.now().strftime("%Y-%m-%d"))
+        path_sensors = os.path.join(main_dir, date_folder)
+        self._filename = f'{path_sensors}/temp_data_{start_time}.csv'# all data is written to this CSV...
     def __enter__(self):
         """return the SMBus object"""
         self._bus = SMBus(self._bus_num)
@@ -144,7 +144,7 @@ class WittyPi():
         """
         curr_time = self.get_current_time()
         # Set the shutdown time for today (will be 8pm normally!)
-        self._shutdown_datetime= curr_time.replace(hour = 16,minute = 0, second = 0)# amount of time until shutdown (at least 3 minutes)
+        self._shutdown_datetime= curr_time.replace(hour = 20,minute = 0, second = 0)# amount of time until shutdown (at least 3 minutes)
         print(self._shutdown_datetime)
         print(self._shutdown_datetime >= datetime.now())
         return self._shutdown_datetime
@@ -259,7 +259,7 @@ class WittyPi():
         ## get the time for the next day, as the experiment will start on button click initally but we want to assign every single next boot...
         start_time = start_time + timedelta(days=1)
         ## now for the start time need to reassign the actual hour,min,second for the experimental start
-        start_time =  start_time.replace(hour=5,minute=0,second=0)
+        start_time =  start_time.replace(hour=7,minute=0,second=0)
         print("StartUp Time:",start_time)
         start_time_list =[start_time.second,start_time.minute,start_time.hour,start_time.day,self.weekday_conv(datetime.weekday(start_time))]
         year = start_time.year 
@@ -330,7 +330,7 @@ class WittyPi():
         temp_f = temp*(9/5) + 32
         if 'temp' not in self.data_dict.keys():
             time_current_split = str(datetime.now().strftime("%Y%m%d_%H%M%S"))
-            self.data_dict['time'] = time_current_split
+            self.data_dict['time'] = [time_current_split]
             self.data_dict['temp'] = [temp]
         ## if key doesn't exist then create
         else:
