@@ -144,7 +144,7 @@ class WittyPi():
         """
         curr_time = self.get_current_time()
         # Set the shutdown time for today (will be 8pm normally!)
-        self._shutdown_datetime= curr_time.replace(hour = 20,minute = 0, second = 0)# amount of time until shutdown (at least 3 minutes)
+        self._shutdown_datetime= curr_time.replace(hour = 16,minute = 0, second = 0)# amount of time until shutdown (at least 3 minutes)
         print(self._shutdown_datetime)
         print(self._shutdown_datetime >= datetime.now())
         return self._shutdown_datetime
@@ -259,7 +259,7 @@ class WittyPi():
         ## get the time for the next day, as the experiment will start on button click initally but we want to assign every single next boot...
         start_time = start_time + timedelta(days=1)
         ## now for the start time need to reassign the actual hour,min,second for the experimental start
-        start_time =  start_time.replace(hour=7,minute=0,second=0)
+        start_time =  start_time.replace(hour=5,minute=0,second=0)
         print("StartUp Time:",start_time)
         start_time_list =[start_time.second,start_time.minute,start_time.hour,start_time.day,self.weekday_conv(datetime.weekday(start_time))]
         year = start_time.year 
