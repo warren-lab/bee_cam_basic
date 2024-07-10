@@ -111,13 +111,13 @@ except:
 os.chdir(curr_date)
 
 if test_yn == 'y':
-    img_count = 21
     disp.display_msg('TEST MODE', img_count)
     if not os.path.exists('test_imgs'):
         os.mkdir('test_imgs')
     os.chdir('test_imgs')
     import numpy as np
-    lp_list = np.arange(0, 5.25, 0.25)
+    lp_list = np.arange(0, 2.75, 0.25)
+    img_count = len(lp_list)
     for lp in lp_list:
         camera.set_controls({"LensPosition": lp})
         camera.capture_file(f'lp_{lp}.jpg')
