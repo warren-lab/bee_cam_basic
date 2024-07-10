@@ -6,4 +6,4 @@
 *.txt
 
 # config
-*.ini
+config.ini
