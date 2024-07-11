@@ -287,11 +287,11 @@ class WittyPi():
             # Python3 program for the above approach 
             print(datetime(day=days,hour = hour,minute=min,second=sec))
             
-    def startup_5min(self):
+    def startup_10min(self):
         # SET STARTUP!
         start_time = self.get_current_time() + timedelta(minutes=10)
         start_time_list =[start_time.second,start_time.minute,start_time.hour,start_time.day,self.weekday_conv(datetime.weekday(start_time))]
-        year = start_time.year
+        year = start_time.year 
         month = start_time.month
         ##  # Using datetime.today()  INT
         for count, val in enumerate(range(27,32)):
@@ -304,7 +304,7 @@ class WittyPi():
             for i in range(27,32):
                 start_list.append(self.bcd_to_int(self._bus.read_byte_data(8,i)))
             sec,min,hour,days,weekday =  start_list
-            print(datetime(year = year+2000, month = month, day=days,hour = hour,minute=min,second=sec))
+            print(datetime(year = year, month = month, day=days,hour = hour,minute=min,second=sec))
 
         elif self.bcd_to_int(self._bus.read_byte_data(8,39)) == 1:
             print("ALARM2 AKA STARTUP: TRIGGERED")

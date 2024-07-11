@@ -217,9 +217,9 @@ while True:
             sleep(5)
             disp.clear_display()
             disp.disp_deinit() 
-            # with WittyPi() as witty: # set shutdown and startup
-            #     witty.shutdown()
-            #     witty.startup()
+            with WittyPi() as witty: # set shutdown and startup
+                witty.shutdown()
+                witty.startup_10min()
             sys.exit()
         else:
             # Wait for a bit before attempting a retry
