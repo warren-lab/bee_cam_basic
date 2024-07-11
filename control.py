@@ -221,6 +221,9 @@ while True:
                 witty.shutdown()
                 witty.startup_10min()
             sys.exit()
+        elif MAX_RETRIES == 1:
+            logging.info("First Retry...Long 10s Delay")
+            sleep(10) # Testing long delay after first instance...
         else:
             # Wait for a bit before attempting a retry
             sleep(2)
