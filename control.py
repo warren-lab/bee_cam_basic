@@ -92,6 +92,9 @@ print(log_file)
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 logging.info("###################### NEW RUN ##################################")
+# set the pucamera logger
+picam_log = logging.getLogger('picamera2')
+picam_log.setLevel(logging.DEBUG)
 
 try:
     camera = Picamera2()
