@@ -59,7 +59,9 @@ def shutdown_to_sleep():
 
 config = Config()
 
-name = config['general']['name']    
+name = config['general']['name']
+start_1 = config['experiment']['startup']
+end_1 = config['experiment']['shutdown'] 
 size = (config['imaging'].getint('w'), config['imaging'].getint('h'))
 lens_position_cfg = config['imaging'].getfloat('lens_position')
 img_count = 0
@@ -81,7 +83,7 @@ disp.display_msg('Initializing', img_count)
 
 # initialize wittypi shutdown
 with WittyPi() as witty:
-    shutdown_dt = witty.get_shutdown_datetime() 
+    shutdown_dt = witty.shutdown_startup(start_1,end_1) 
 
 # Configure logging
 # log_file = "/home/pi/bee_cam/log.txt"
@@ -233,7 +235,7 @@ while True:
         sleep(10)
         with WittyPi() as witty: # set shutdown and startup
             witty.shutdown()
-            witty.startup()
+            # witty.startup() # Timed startup set at start 
         sleep(5)
         disp.clear_display()
         disp.disp_deinit() 

@@ -3,6 +3,31 @@ Below is the outlined procedure for when dealing with calibrating the RTC of the
 
 Currently, this process is manual but we will be implementing a fleed managment system in order to communicate with the various deployed nodes.
 
+
+## (OPTIONAL) Experimental Testing and Change Time
+* Upon boot up periodically check the display
+* Execute a Systemctl Stop of the service and check the service status to ensure that it has fully stopped
+```
+sudo systemctl stop bee_cam_basic.service
+sudo systemctl status bee_cam_basic.service
+```
+* Check the wittyPi shutdown/startup times and reset those once the service has been killed
+```
+cd wittypi/
+./wittyPi.sh
+```
+    - option 12 Reset data
+    - option 2 (Clear scheduled shutdown time)
+    - option 12 Reset data
+    - option 1 (Clear scheduled startup time)
+    - option 13 (Exit)
+
+* At this point go into the config.ini on the pi and edit the startup times
+```
+cd bee_cam_basic/
+sudo nano config.ini
+```
+
 ## Test 1
 * WittyPi 4 Mini Manual Shutdown
     - Power on the WittyPi 4 Mini (using USB-C to WittyPi 4 Mini directly), but dont press the button.
