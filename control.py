@@ -60,8 +60,8 @@ def shutdown_to_sleep():
 config = Config()
 
 name = config['general']['name']
-start_1 = config['experiment']['startup']
-end_1 = config['experiment']['shutdown'] 
+start_1 = config['imaging']['startup']
+end_1 = config['imaging']['shutdown'] 
 size = (config['imaging'].getint('w'), config['imaging'].getint('h'))
 lens_position_cfg = config['imaging'].getfloat('lens_position')
 img_count = 0
