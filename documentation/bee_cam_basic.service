@@ -1,0 +1,17 @@
+[Unit]
+Description=Service file that will start the bee_cam_basic control script up
+After=datetime_sync.service
+
+[Service]
+Type=oneshot         
+WorkingDirectory=/home/pi/bee_cam_basic/
+User=pi
+#ExecStartPre=/bin/sleep 20
+ExecStart=/usr/bin/python3 /home/pi/bee_cam_basic/control.py
+KillSignal=SIGTERM
+TimeoutStopSec=30
+KillMode=control-group
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

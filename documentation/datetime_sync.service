@@ -1,0 +1,13 @@
+[Unit]
+Description=Service that checks for network connection and sets time, and then also checks wittypy rtc time and fixes that. Occurs once on boot up.
+After=rc-local.service
+Before=bee_cam_basic.service
+
+[Service]
+Type=oneshot
+#ExecStart=/bin/sleep 10
+ExecStart=/home/pi/time_init.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
