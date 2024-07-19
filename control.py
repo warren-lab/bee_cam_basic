@@ -11,6 +11,7 @@ from scripts.sensors import DarkPeriod
 from scripts.sensors import ShutdownTime
 from picamera2 import Picamera2
 from time import sleep
+from time import time
 from datetime import datetime
 import threading
 import time
@@ -141,22 +142,50 @@ time_current = datetime.now()
 
 cam_exception = threading.Event()
 
+# def capture_image():
+#     global last_capture_time
+
+#     try:
+#         time_current_split = str(time_current.strftime("%Y%m%d_%H%M%S"))
+#         camera.capture_file('images/'+name + '_' + time_current_split + '.jpg')
+#         # print(("Image acquired: %s", time_current_split))
+#         logging.info("Image acquired: %s", time_current_split)
+#         #print("Image acquired: ", time_current_split)
+
+#     except Exception as e:
+#         logging.error("Error in capture_image: %s".e)
+#         cam_exception.set()
+
+last_capture_time = time.time() - 1
+
 def capture_image():
+    global last_capture_time
+    global img_count
+    
     try:
-        time_current_split = str(time_current.strftime("%Y%m%d_%H%M%S"))
-        camera.capture_file('images/'+name + '_' + time_current_split + '.jpg')
-        # print(("Image acquired: %s", time_current_split))
-        logging.info("Image acquired: %s", time_current_split)
-        #print("Image acquired: ", time_current_split)
+        current_time = time.time()
+        
+        if current_time - last_capture_time >= 1:
+            time_current = datetime.now()
+            time_current_split = str(time_current.strftime("%Y%m%d_%H%M%S"))
+            camera.capture_file('images/' + name + '_' + time_current_split + '.jpg')
+            logging.info("Image acquired: %s", time_current_split)
+
+            last_capture_time = current_time
+            img_count += 1
+        else:
+            logging.info("Skipping capture to ensure one image per second rule")
 
     except Exception as e:
-        logging.error("Error in capture_image: %s".e)
+        logging.error("Error in capture_image: %s", e)
         cam_exception.set()
+
+
 MAX_RETRIES = 6
 retry_count = 0
 disp.display_msg('Starting Experiment', img_count)
 logging.info('Starting Experiment')
-sleep(3)
+sleep(1)
 
 # SET PID
 def sig_handler(signum, frame):
@@ -201,7 +230,6 @@ while True:
         if shutdown_dt <= datetime.now():
             raise ShutdownTime
         
-        img_count += 1
         retry_count = 0
        
     except KeyboardInterrupt:
