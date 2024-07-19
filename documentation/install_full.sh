@@ -18,8 +18,9 @@ install_pip_packages() {
 }
 
 APT_PACKAGES=(
-  git
   python3-picamera2
+  feh
+  av
 )
 
 PIP_PACKAGES=(
