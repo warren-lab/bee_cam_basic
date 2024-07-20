@@ -21,7 +21,6 @@ install_pip_packages() {
 APT_PACKAGES=(
   python3-picamera2
   feh
-  av
 )
 
 PIP_PACKAGES=(
@@ -37,7 +36,7 @@ install_apt_packages "${APT_PACKAGES[@]}"
 
 install_pip_packages "${PIP_PACKAGES[@]}"
 
-pip3 uninstall "numpy"
+pip3 uninstall --yes "numpy"
 pip3 install "numpy"
 
 sudo apt-get -y remove fake-hwclock
@@ -85,12 +84,10 @@ systemctl daemon-reload
 datetime_service="datetime_sync.service"
 echo "Enabling and starting $datetime_service"
 systemctl enable "$datetime_service"
-systemctl start "$datetime_service"
 
 beecam_service="bee_cam_basic.service"
 echo "Enabling and starting $beecam_service"
 systemctl enable "$beecam_service"
-systemctl start "$beecam_service"
 
 cd /home/pi
 
