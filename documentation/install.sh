@@ -76,7 +76,7 @@ install_file "$script_dir/hwclock-set" "/lib/udev/hwclock-set" 755
 install_file "$script_dir/datetime_sync.service" "$service_path" 644
 install_file "$script_dir/bee_cam_basic.service" "$service_path" 644
 
-
+install_file "$script_dir/config.ini.example" "$home_path/bee_cam_basic/config.ini" 644
 
 echo "Reloading systemd daemon"
 systemctl daemon-reload

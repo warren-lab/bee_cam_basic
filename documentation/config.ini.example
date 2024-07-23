@@ -1,10 +1,10 @@
 [general]
-name: pi1
+name: pix
 test: n
 
 [imaging]
 w = 2304
 h = 1296
 lens_position: 2.5
-startup: 6,0,0
+startup: 5,0,0
 shutdown: 20,0,0
