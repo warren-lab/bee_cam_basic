@@ -16,6 +16,7 @@ from datetime import datetime
 import threading
 import time
 import psutil
+import shutil
 """
 Image2 is the current version of the imaging script for writing the sensor data to csv
 
@@ -200,6 +201,12 @@ def sig_handler(signum, frame):
 # pid = os.getpid()
 signal.signal(signal.SIGTERM,sig_handler)
 
+def check_disk_space():
+    total, used, free = shutil.disk_usage("/")
+    return free
+
+min_free = 1024 * 1024
+
 # Start timer for the sensors
 curr_time = time.time()
 while True:
@@ -225,13 +232,17 @@ while True:
 
         # If thread is still alive after 3 seconds, it's probably hung
         if capture_thread.is_alive():
-            raise TimeoutError("Camera operation took too long!")
-        
+            free_space = check_disk_space()
+            if free_space < min_free:
+                raise OSError(28, 'Disk full')
+            else:
+                raise TimeoutError("Thread Timeout")
+
         if shutdown_dt <= datetime.now():
             raise ShutdownTime
-        
+
         retry_count = 0
-       
+
     except KeyboardInterrupt:
         disp.display_msg('Interrupted', img_count)
         time.sleep(5)
@@ -245,15 +256,16 @@ while True:
         disp.display_msg('Cam Timeout!', img_count)
         logging.error("Camera operation timeout!")
         if retry_count >= MAX_RETRIES:
-            disp.display_msg('Max retries reached!', img_count)
-            logging.error("Max retries reached. Exiting...")
-            sleep(5)
-            disp.clear_display()
-            disp.disp_deinit() 
-            with WittyPi() as witty: # set shutdown and startup
-                witty.shutdown()
-                witty.startup_10min()
-            sys.exit()
+            disp.display_msg('Cam timeout error', img_count)
+            logging.error("Max retries reached.")
+            break
+#            sleep(5)
+#            disp.clear_display()
+#            disp.disp_deinit()
+#            with WittyPi() as witty: # set shutdown and startup
+#                witty.shutdown()
+#                witty.startup_10min()
+#            sys.exit()
         elif MAX_RETRIES == 1:
             logging.info("First Retry...Long 10s Delay")
             sleep(10) # Testing long delay after first instance...
@@ -261,16 +273,28 @@ while True:
             # Wait for a bit before attempting a retry
             sleep(2)
             continue
+
     except ShutdownTime:
         disp.display_msg('Timed Shutdown', img_count)
         sleep(10)
         with WittyPi() as witty: # set shutdown and startup
             witty.shutdown()
-            # witty.startup() # Timed startup set at start 
+            # witty.startup() # Timed startup set at start
         sleep(5)
         disp.clear_display()
-        disp.disp_deinit() 
+        disp.disp_deinit()
         sys.exit()
+
+    except OSError as e:
+        if e.errno == 28:
+            disp.display_msg('DISK FULL', img_count)
+            print('Disk full error')
+            logging.error("Disk is full.")
+            break
+        else:
+            logging.error(f"Other OS error: {e}.")
+            break
+
     except:
         disp.display_msg('Error', img_count)
         logging.exception("Error capturing image")
