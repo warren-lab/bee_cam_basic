@@ -162,10 +162,9 @@ last_capture_time = time.time() - 1
 def capture_image():
     global last_capture_time
     global img_count
-    
+
     try:
         current_time = time.time()
-        
         if current_time - last_capture_time >= 1:
             time_current = datetime.now()
             time_current_split = str(time_current.strftime("%Y%m%d_%H%M%S"))
